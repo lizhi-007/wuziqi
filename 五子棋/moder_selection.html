@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>五子棋 - 模式选择</title>
+    <style>
+        body {
+            margin: 0;
+            background-image: url('img/bg_picture1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            position: fixed;
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            height: calc(100vh - 80px); 
+            overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(200, 200, 200, 0.7);
+            border: 1px solid #bdbdbd;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            padding: 30px 40px;
+            z-index: 5; 
+        }
+    
+        .main-container h2 {
+            color: #5f5f47; 
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+		#backBtn {
+		    position: absolute;
+		    top: 20px;
+		    left: 20px;
+		    padding: 10px 20px;
+		    background: #a9a9a9;
+		    color: white;
+		    border: none;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    transition: all 0.3s;
+		    z-index: 10;
+		}
+		#backBtn:hover {
+		    background: #d32f2f;
+		}
+        .mode-box {
+            background: rgba(255, 255, 255, 0.7); 
+            padding: 25px 60px;
+            border-radius: 10px;
+            margin: 40px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.3rem;
+            color: #69694e;
+            border: 1px solid #d0e8d0;
+        }
+        .mode-box:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        /*设置按钮 */
+        #settingBtn {
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            padding: 10px 20px;
+            background: #a9a9a9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10; 
+        }
+        #settingBtn:hover {
+            background: #388E3C;
+        }
+    
+        /*设置面板样*/
+        #settingPanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #aeaeae;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            display: none;
+            width: 250px;
+        }
+        #settingPanel label {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        #volumeControl {
+            flex: 1;
+        }
+		#closeSetting {
+		    position: absolute;
+		    top: 15px;
+		    right: 15px;
+		    width: 20px;
+		    height: 20px;
+		    cursor: pointer;
+		    text-indent: -9999px;
+		    overflow: hidden;
+		}
+		
+		#closeSetting::before,
+		#closeSetting::after {
+		    content: '';
+		    position: absolute;
+		    width: 100%;
+		    height: 2px;
+		    background: #666;
+		    left: 0;
+		    top: 50%;
+		    transform: translateY(-50%);
+		}
+		
+		#closeSetting::before {
+		    transform: translateY(-50%) rotate(45deg);
+		}
+		
+		#closeSetting::after {
+		    transform: translateY(-50%) rotate(-45deg);
+		}
+		
+		#closeSetting:hover::before,
+		#closeSetting:hover::after {
+		    background: #388E3C;
+		}
+    </style>
+</head>
+<body>
+    <!-- 音频 -->
+    <audio id="bgMusic" preload="auto" loop>
+        <source src="img/背景音乐.mp3" type="audio/mp3">
+    </audio>
+     
+    <audio id="clickSound" preload="auto">
+        <source src="img/音效.mp3" type="audio/mp3">
+    </audio>
+	 
+    <div class="main-container">
+		<button id="backBtn">返回</button>
+        <h1>选择游戏模式</h1>
+		<br />
+        <div class="mode-box" id="singleMode">人机对决</div>
+        <div class="mode-box" id="doubleMode">双人对战</div>
+        <div class="mode-box" id="trainMode">个人训练</div>
+        <button id="settingBtn">设置</button>
+       
+	<div id="settingPanel">
+	    <h3 style="text-align: center;">设置</h3>
+	    <label>
+	        <input type="checkbox" id="musicToggle" checked> 背景音乐
+	    </label>
+	    <label>
+	        <input type="checkbox" id="soundToggle" checked> 点击音效
+	    </label>
+	    <label>
+	        音量：
+	        <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.5">
+	        <span id="volumeValue">50%</span>
+	    </label>
+		<label>
+			透明度：
+			<input type="range" id="opacitySlider" min="0" max="1" step="0.1" value="0.7">
+			<span id="opacityValue">70%</span>
+		</label>
+	    <div style="margin: 15px 0;">
+	        <h4 style="margin: 5px 0;">桌面背景切换</h4>
+	        <label style="display: block; margin: 8px 0;">
+	            <input type="radio" name="bgSelect" value="bg_picture1" checked> 背景1
+	        </label>
+	        <label style="display: block; margin: 8px 0;">
+	            <input type="radio" name="bgSelect" value="bg_picture2"> 背景2
+	        </label>
+	        <label style="display: block; margin: 8px 0;">
+	            <input type="radio" name="bgSelect" value="bg_picture3"> 背景3
+	        </label>
+	    </div>
+		
+	    <div id="closeSetting">×</div>
+	</div>
+
+    <script>
+		const bgRadios = document.querySelectorAll('input[name="bgSelect"]')
+        const bgMusic = document.getElementById('bgMusic');
+        const clickSound = document.getElementById('clickSound'); 
+        const settingBtn = document.getElementById('settingBtn');
+        const settingPanel = document.getElementById('settingPanel');
+        const closeSetting = document.getElementById('closeSetting');
+        const musicToggle = document.getElementById('musicToggle');
+        const soundToggle = document.getElementById('soundToggle');
+        const volumeControl = document.getElementById('volumeControl');
+        const volumeValue = document.getElementById('volumeValue');
+        const backBtn = document.getElementById('backBtn');
+        bgMusic.volume = 0.5;
+        clickSound.volume = 0.7; 
+        volumeValue.textContent = "50%";
+
+        function playClickSound() {
+            if (!soundToggle.checked) return;
+            clickSound.currentTime = 0;
+            clickSound.play().catch(err => {
+                console.log('点击音效播放失败:', err);
+            });
+        }
+    
+	    // 返回按钮
+	    backBtn.addEventListener('click', () => {
+	        playClickSound(); 
+	        window.location.href = "index.html";
+	    });
+        bgMusic.play().catch(err => {
+            console.log('首次播放触发浏览器策略，若失败需后续交互');
+        });
+        settingBtn.addEventListener('click', () => {
+            playClickSound(); 
+            settingPanel.style.display = 'block';
+        });
+        closeSetting.addEventListener('click', () => {
+            playClickSound(); 
+            settingPanel.style.display = 'none';
+        });
+    
+        // 音乐开关
+        musicToggle.addEventListener('change', () => {
+            playClickSound(); 
+            if (musicToggle.checked) {
+                bgMusic.play().catch(() => {
+                    alert('播放失败，请检查音频路径或浏览器～');
+                });
+                volumeControl.disabled = false;
+            } else {
+                bgMusic.pause();
+                volumeControl.disabled = true;
+            }
+        });
+    
+        // 音量调节
+        volumeControl.addEventListener('input', () => {
+            const volume = parseFloat(volumeControl.value);
+            bgMusic.volume = volume;
+            clickSound.volume = volume;
+            const volumePercent = Math.round(volume * 100);
+            volumeValue.textContent = `${volumePercent}%`;
+        });
+		// 透明度调节
+		const opacitySlider = document.getElementById('opacitySlider');
+		const opacityValue = document.getElementById('opacityValue');
+		const container = document.querySelector('.main-container');
+	    opacitySlider.addEventListener('input', () => {
+	    	const opacity = parseFloat(opacitySlider.value);
+	    	container.style.backgroundColor = `rgba(200, 200, 200, ${opacity})`;
+			const opacityPercent = Math.round(opacity * 100);
+	    	opacityValue.textContent = `${opacityPercent}%`;
+	    });
+        
+        // 模式选择
+        document.getElementById('singleMode').addEventListener('click', () => {
+            playClickSound(); 
+            alert('即将进入单人模式～');
+            window.location.href = "person_battle.html";
+        });
+        document.getElementById('doubleMode').addEventListener('click', () => {
+            playClickSound(); 
+            alert('即将进入双人模式～');
+			window.location.href = "double_battle.html";
+        });
+        document.getElementById('trainMode').addEventListener('click', () => {
+            playClickSound(); 
+            alert('即将进入个人训练模式～');
+			window.location.href = "person_train.html";
+        });
+        
+        // 背景切换
+        bgRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                playClickSound(); 
+                const selectedBg = radio.value; 
+                const bgPath = `img/${selectedBg}.jpg`; 
+                document.body.style.backgroundImage = `url('${bgPath}')`;
+            });
+        });
+    </script>
+</body>
+</html>
